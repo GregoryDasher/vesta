@@ -1,0 +1,55 @@
+[package]
+name = "muguet"
+version = "0.1.0"
+edition = "2021"
+license = "GPL-3.0-or-later"
+
+[lib]
+name = "muguet"
+crate-type = ["cdylib", "rlib"]
+
+[[bin]]
+name = "muguet-desktop"
+path = "src/main.rs"
+
+[dependencies]
+wasmtime = { version = "49", default-features = false, features = ["runtime", "threads", "profiling", "anyhow"] }
+anyhow = "1"
+libc = "0.2"
+serde_json = "1.0.151"
+wgpu = { version = "30.0.1", features = ["vulkan", "gles"] }
+pollster = "1.0.1"
+regex = "1.13.1"
+zip = { version = "2", default-features = false, features = ["deflate"] }
+wasmparser = { version = "0.258.3", optional = true }
+wasm-encoder = { version = "0.258.3", optional = true, features = ["wasmparser"] }
+bcdec_rs = "0.2.0"
+
+[features]
+default = ["jit"]
+jit = ["wasmtime/cranelift", "wasmtime/parallel-compilation", "dep:wasmparser", "dep:wasm-encoder"]
+
+[target.'cfg(target_os = "ios")'.dependencies]
+winit = "0.30.13"
+objc2 = "0.6"
+block2 = "0.6"
+objc2-foundation = { version = "0.3", default-features = false, features = ["std", "NSArray", "NSString"] }
+objc2-core-foundation = { version = "0.3", default-features = false, features = ["std", "CFCGTypes"] }
+objc2-game-controller = { version = "0.3", default-features = false, features = ["std", "GCController", "GCExtendedGamepad", "GCPhysicalInputProfile", "GCControllerElement", "GCControllerAxisInput", "GCControllerButtonInput", "GCControllerDirectionPad", "GCKeyboard", "GCKeyboardInput", "GCKeyCodes", "objc2-core-foundation", "GCMouse", "GCMouseInput", "GCDeviceCursor", "block2"] }
+audiopus_sys = { version = "0.2", features = ["static"] }
+
+[target.'cfg(target_os = "macos")'.dependencies]
+winit = "0.30.13"
+audiopus_sys = { version = "0.2", features = ["static"] }
+
+[target.'cfg(target_os = "android")'.dependencies]
+jni = "0.21"
+ndk = "0.9"
+ndk-sys = "0.6"
+ndk-context = "0.1"
+android_logger = "0.14"
+log = "0.4"
+raw-window-handle = "0.6"
+
+[profile.release]
+opt-level = 2
